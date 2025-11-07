@@ -27,11 +27,15 @@ let pairs = [];
 let currentRound = 0;
 let studyIdx = 0;
 let studyTimer = null;
-let scoresByRound = { 1: 0, 2: 0, 3: 0 };
 let currentOrder = [];
 let currentCueIndex = 0;
 let currentCorrect = 0;
 let answerTimer = null;
+
+// Score variables
+let roundOneScore = 0;
+let roundTwoScore = 0;
+let roundThreeScore = 0;
 
 // ======== Elements ========
 let phaseLabelEl, progressBarEl;
@@ -82,6 +86,7 @@ function normalize(s) {
 function startStudy() {
   setPhase("study");
   studyIdx = 0;
+  pairs = shuffle(pairs); // randomize order each study round
   clampProgress(0);
   renderStudyPair();
   studyTimer = setInterval(nextStudyPair, STUDY_MS);
@@ -106,7 +111,7 @@ function nextStudyPair() {
   renderStudyPair();
 }
 
-// ======== Rounds (one cue at a time) ========
+// ======== Rounds (one cue at a time, left word only) ========
 function startRound(n) {
   currentRound = n;
   currentCorrect = 0;
@@ -122,7 +127,10 @@ function showNextCue() {
   roundListEl.innerHTML = "";
 
   if (currentCueIndex >= currentOrder.length) {
-    scoresByRound[currentRound] = currentCorrect;
+    if (currentRound === 1) roundOneScore = currentCorrect;
+    if (currentRound === 2) roundTwoScore = currentCorrect;
+    if (currentRound === 3) roundThreeScore = currentCorrect;
+
     if (currentRound < 3) {
       startStudyAgainThenRound(currentRound + 1);
     } else {
@@ -132,9 +140,8 @@ function showNextCue() {
   }
 
   const idx = currentOrder[currentCueIndex];
-  const cueSide = Math.random() < 0.5 ? 0 : 1;
-  const cue = pairs[idx][cueSide];
-  const target = pairs[idx][1 - cueSide];
+  const cue = pairs[idx][0];       // always left word
+  const target = pairs[idx][1];    // always right word
 
   const item = document.createElement("div");
   item.className = "round-item";
@@ -183,6 +190,7 @@ function showNextCue() {
 function startStudyAgainThenRound(nextRoundNum) {
   setPhase("study");
   studyIdx = 0;
+  pairs = shuffle(pairs); // randomize order again
   clampProgress(0);
   renderStudyPair();
   if (studyTimer) clearInterval(studyTimer);
@@ -200,9 +208,9 @@ function startStudyAgainThenRound(nextRoundNum) {
 
 function showSummary() {
   setPhase("summary");
-  scoreR1El.textContent = `${scoresByRound[1]}/12 (Week ${weekNumber})`;
-  scoreR2El.textContent = `${scoresByRound[2]}/12 (Week ${weekNumber})`;
-  scoreR3El.textContent = `${scoresByRound[3]}/12 (Week ${weekNumber})`;
+  scoreR1El.textContent = `${roundOneScore}/12 (Week ${weekNumber})`;
+  scoreR2El.textContent = `${roundTwoScore}/12 (Week ${weekNumber})`;
+  scoreR3El.textContent = `${roundThreeScore}/12 (Week ${weekNumber})`;
   clampProgress(100);
 }
 
@@ -218,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   weekInput = document.getElementById("week-input");
   startBtn = document.getElementById("start-btn");
-  skipBtn = document.getElementById("skip-study-btn"); // repurposed as Skip in rounds
+  skipBtn = document.getElementById("skip-study-btn"); // reused as Skip in rounds
 
   pairLeftEl = document.getElementById("pair-left");
   pairRightEl = document.getElementById("pair-right");
@@ -247,4 +255,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   restartBtn.addEventListener("click", () => {
-    weekNumber = null;
+  // Reset state
+  weekNumber = null;
+  wordsetIndex = 0;
+  pairs = [];
+  currentRound = 0;
+  studyIdx = 0;
+  currentCueIndex = 0;
+  currentCorrect = 0;
+
+  // Reset scores
+  roundOneScore = 0;
+  roundTwoScore = 0;
+  roundThreeScore = 0;
+
+  // Clear timers
+  if (studyTimer) clearInterval(studyTimer);
+  if (answerTimer) clearTimeout(answerTimer);
+
+  // Reset UI
+  weekInput.value = "";
+  clampProgress(0);
+  setPhase("setup");
+});
