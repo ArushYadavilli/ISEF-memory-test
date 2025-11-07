@@ -4,48 +4,21 @@
 const WORDSETS = [
   // Wordset 1
   [
-    ["cat", "ring"],
-    ["sun", "jam"],
-    ["bed", "rope"],
-    ["fish", "bell"],
-    ["tree", "mask"],
-    ["star", "shoe"],
-    ["book", "coal"],
-    ["rain", "gold"],
-    ["glass", "farm"],
-    ["road", "leaf"],
-    ["bread", "wave"],
-    ["clock", "sand"],
+    ["cat", "ring"], ["sun", "jam"], ["bed", "rope"], ["fish", "bell"],
+    ["tree", "mask"], ["star", "shoe"], ["book", "coal"], ["rain", "gold"],
+    ["glass", "farm"], ["road", "leaf"], ["bread", "wave"], ["clock", "sand"],
   ],
   // Wordset 2
   [
-    ["ship", "barn"],
-    ["salt", "glove"],
-    ["stone", "card"],
-    ["wind", "seat"],
-    ["lamp", "knot"],
-    ["foot", "surf"],
-    ["milk", "twig"],
-    ["ring", "cup"],
-    ["seed", "mine"],
-    ["bell", "sky"],
-    ["leaf", "hook"],
-    ["mask", "page"],
+    ["ship", "barn"], ["salt", "glove"], ["stone", "card"], ["wind", "seat"],
+    ["lamp", "knot"], ["foot", "surf"], ["milk", "twig"], ["ring", "cup"],
+    ["seed", "mine"], ["bell", "sky"], ["leaf", "hook"], ["mask", "page"],
   ],
   // Wordset 3
   [
-    ["coal", "bed"],
-    ["gate", "fish"],
-    ["wave", "bread"],
-    ["sand", "star"],
-    ["chair", "rain"],
-    ["hand", "glass"],
-    ["card", "sun"],
-    ["wheel", "book"],
-    ["barn", "cat"],
-    ["rope", "tree"],
-    ["bird", "road"],
-    ["jam", "ship"],
+    ["coal", "bed"], ["gate", "fish"], ["wave", "bread"], ["sand", "star"],
+    ["chair", "rain"], ["hand", "glass"], ["card", "sun"], ["wheel", "book"],
+    ["barn", "cat"], ["rope", "tree"], ["bird", "road"], ["jam", "ship"],
   ],
 ];
 
@@ -53,52 +26,51 @@ const WORDSETS = [
 const STUDY_MS = 3000;
 
 // ======== State ========
-
 let weekNumber = null;
 let wordsetIndex = 0;
-let pairs = []; // active 12 pairs
-let phase = "setup"; // setup | study | round | summary
-let currentRound = 0; // 1..3
+let pairs = [];
+let phase = "setup";
+let currentRound = 0;
 let studyIdx = 0;
 let studyTimer = null;
 let answersByRound = { 1: [], 2: [], 3: [] };
 let scoresByRound = { 1: 0, 2: 0, 3: 0 };
 
 // ======== Elements ========
+let phaseLabelEl;
+let progressBarEl;
 
-const phaseLabelEl = document.getElementById("phase-label");
-const progressBarEl = document.getElementById("progress-bar");
+let setupSection;
+let studySection;
+let roundSection;
+let summarySection;
 
-const setupSection = document.getElementById("setup-section");
-const studySection = document.getElementById("study-section");
-const roundSection = document.getElementById("round-section");
-const summarySection = document.getElementById("summary-section");
+let weekInput;
+let startBtn;
+let skipStudyBtn;
 
-const weekInput = document.getElementById("week-input");
-const startBtn = document.getElementById("start-btn");
-const skipStudyBtn = document.getElementById("skip-study-btn");
+let pairLeftEl;
+let pairRightEl;
 
-const pairLeftEl = document.getElementById("pair-left");
-const pairRightEl = document.getElementById("pair-right");
+let roundTitleEl;
+let roundListEl;
+let submitRoundBtn;
 
-const roundTitleEl = document.getElementById("round-title");
-const roundListEl = document.getElementById("round-list");
-const submitRoundBtn = document.getElementById("submit-round-btn");
-
-const scoreR1El = document.getElementById("score-r1");
-const scoreR2El = document.getElementById("score-r2");
-const scoreR3El = document.getElementById("score-r3");
-const restartBtn = document.getElementById("restart-btn");
+let scoreR1El;
+let scoreR2El;
+let scoreR3El;
+let restartBtn;
 
 // ======== Utils ========
-
 function setPhase(name) {
   phase = name;
-  phaseLabelEl.textContent =
-    name === "setup" ? "Setup" :
-    name === "study" ? "Study" :
-    name === "round" ? `Round ${currentRound}` :
-    name === "summary" ? "Summary" : "";
+  if (phaseLabelEl) {
+    phaseLabelEl.textContent =
+      name === "setup" ? "Setup" :
+      name === "study" ? "Study" :
+      name === "round" ? `Round ${currentRound}` :
+      name === "summary" ? "Summary" : "";
+  }
 
   setupSection.classList.toggle("active", name === "setup");
   studySection.classList.toggle("active", name === "study");
@@ -111,7 +83,6 @@ function clampProgress(pct) {
 }
 
 function selectWordset(weekNum) {
-  // Cycle week number through sets: week % 3
   const idx = ((weekNum % 3) + 3) % 3;
   const map = { 1: 0, 2: 1, 0: 2 };
   return map[idx];
@@ -131,7 +102,6 @@ function normalize(s) {
 }
 
 // ======== Study Phase ========
-
 function startStudy() {
   setPhase("study");
   studyIdx = 0;
@@ -144,7 +114,7 @@ function renderStudyPair() {
   const [L, R] = pairs[studyIdx];
   pairLeftEl.textContent = L;
   pairRightEl.textContent = R;
-  const pct = ((studyIdx) / pairs.length) * 100;
+  const pct = (studyIdx / pairs.length) * 100;
   clampProgress(pct);
 }
 
@@ -160,14 +130,12 @@ function nextStudyPair() {
 }
 
 // ======== Rounds ========
-
 function startRound(n) {
   currentRound = n;
   setPhase("round");
   roundTitleEl.textContent = `Round ${n}`;
 
   const order = shuffle(pairs.map((p, i) => i));
-
   roundListEl.innerHTML = "";
   answersByRound[n] = new Array(pairs.length).fill("");
 
@@ -259,42 +227,71 @@ function showSummary() {
   clampProgress(100);
 }
 
-// ======== Event Listeners ========
+// ======== Boot & Event Listeners ========
+document.addEventListener("DOMContentLoaded", () => {
+  // Bind elements after DOM is ready
+  phaseLabelEl = document.getElementById("phase-label");
+  progressBarEl = document.getElementById("progress-bar");
 
-startBtn.addEventListener("click", () => {
-  const val = Number(weekInput.value);
-  if (!val || val < 1) {
-    alert("Please enter a valid week number (1 or higher).");
-    weekInput.focus();
-    return;
-  }
-  weekNumber = val;
-  wordsetIndex = selectWordset(weekNumber);
-  pairs = WORDSETS[wordsetIndex].slice();
-  pairs = shuffle(pairs);
-  startStudy();
-});
+  setupSection = document.getElementById("setup-section");
+  studySection = document.getElementById("study-section");
+  roundSection = document.getElementById("round-section");
+  summarySection = document.getElementById("summary-section");
 
-skipStudyBtn.addEventListener("click", () => {
-  nextStudy();
-});
-submitRoundBtn.addEventListener("click", () => {
-  scoreRound();
-  const pct = (currentRound / 3) * 100;
-  clampProgress(pct);
-  continueFlowAfterRound();
-});
+  weekInput = document.getElementById("week-input");
+  startBtn = document.getElementById("start-btn");
+  skipStudyBtn = document.getElementById("skip-study-btn");
 
-restartBtn.addEventListener("click", () => {
-  weekNumber = null;
-  wordsetIndex = 0;
-  pairs = [];
-  phase = "setup";
-  currentRound = 0;
-  studyIdx = 0;
-  if (studyTimer) clearInterval(studyTimer);
-  answersByRound = { 1: [], 2: [], 3: [] };
-  scoresByRound = { 1: 0, 2: 0, 3: 0 };
-  weekInput.value = "";
-  clampProgress(0);
-  setPhase("setup");
+  pairLeftEl = document.getElementById("pair-left");
+  pairRightEl = document.getElementById("pair-right");
+
+  roundTitleEl = document.getElementById("round-title");
+  roundListEl = document.getElementById("round-list");
+  submitRoundBtn = document.getElementById("submit-round-btn");
+
+  scoreR1El = document.getElementById("score-r1");
+  scoreR2El = document.getElementById("score-r2");
+  scoreR3El = document.getElementById("score-r3");
+  restartBtn = document.getElementById("restart-btn");
+
+  // Attach listeners
+  startBtn.addEventListener("click", () => {
+    const val = Number(weekInput.value);
+    if (!val || val < 1) {
+      alert("Please enter a valid week number (1 or higher).");
+      weekInput.focus();
+      return;
+    }
+    weekNumber = val;
+    wordsetIndex = selectWordset(weekNumber);
+    pairs = WORDSETS[wordsetIndex].slice();
+    pairs = shuffle(pairs);
+    startStudy();
+  });
+
+  skipStudyBtn.addEventListener("click", () => {
+    nextStudyPair();
+  });
+
+  submitRoundBtn.addEventListener("click", () => {
+    scoreRound();
+    const pct = (currentRound / 3) * 100;
+    clampProgress(pct);
+    continueFlowAfterRound();
+  });
+
+  restartBtn.addEventListener("click", () => {
+    weekNumber = null;
+    wordsetIndex = 0;
+    pairs = [];
+    phase = "setup";
+    currentRound = 0;
+    studyIdx = 0;
+    if (studyTimer) clearInterval(studyTimer);
+    answersByRound = { 1: [], 2: [], 3: [] };
+    scoresByRound = { 1: 0, 2: 0, 3: 0 };
+    weekInput.value = "";
+    clampProgress(0);
+    setPhase("setup");
+  });
+});
