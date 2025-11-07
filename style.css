@@ -79,17 +79,23 @@ body {
 .title {
   font-size: 28px;
   font-weight: 700;
+  margin: 0 0 8px;
 }
 
 .subtitle {
   color: var(--muted);
-  margin-bottom: 18px;
+  margin: 0 0 18px;
 }
 
 .form-row {
   display: grid;
   gap: 8px;
   margin: 16px 0 24px;
+}
+
+label {
+  font-size: 14px;
+  color: var(--muted);
 }
 
 input[type="number"],
@@ -99,6 +105,7 @@ input[type="text"] {
   color: var(--text);
   border-radius: 10px;
   padding: 12px 14px;
+  outline: none;
 }
 
 input:focus {
@@ -113,6 +120,12 @@ input:focus {
   background: #0b1324;
   color: var(--text);
   cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
 }
 
 .btn.primary {
@@ -122,19 +135,37 @@ input:focus {
   font-weight: 700;
 }
 
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .study-pair {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 18px;
   margin: 24px 0;
   padding: 22px;
   border: 1px dashed var(--border);
   border-radius: 16px;
+  background: rgba(13,19,36,0.6);
 }
 
 .pair-word {
   font-size: 28px;
   font-weight: 700;
+}
+
+.pair-divider {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.controls {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
 }
 
 .round-list {
@@ -151,11 +182,14 @@ input:focus {
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
+  background: rgba(13,19,36,0.6);
 }
 
 .round-item .cue {
   font-weight: 600;
   color: var(--accent-2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .score-grid {
@@ -169,7 +203,13 @@ input:focus {
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 12px;
+  background: rgba(13,19,36,0.6);
   text-align: center;
+}
+
+.score-label {
+  color: var(--muted);
+  margin-bottom: 8px;
 }
 
 .score-value {
