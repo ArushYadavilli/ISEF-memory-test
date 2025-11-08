@@ -165,8 +165,9 @@ input:focus {
 .controls {
   margin-top: 16px;
   display: flex;
-  gap: 12px;
+  justify-content: center; /* center single button */
 }
+
 
 .round-list {
   display: grid;
