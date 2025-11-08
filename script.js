@@ -58,7 +58,7 @@ let answerTime = null;
 //Score variables for each round
 let roundOneScore = 0;
 let roundTwoScore = 0;
-let roundThreeScore = 0;\
+let roundThreeScore = 0;
 
 // ======== Elements ========
 
