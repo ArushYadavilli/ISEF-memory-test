@@ -78,9 +78,6 @@ let summarySection;
 let weekInput;
 let startBtn;
 
-// Skip button (used both in study and round phases)
-let skipBtn;
-
 // Elements showing the left and right words during study
 let pairLeftEl;
 let pairRightEl;
@@ -251,14 +248,7 @@ function showNextCue() {
     currentCueIndex++;
     showNextCue();
   };
-
-  // Skip button logic
-  skipBtn.onclick = () => {
-    clearTimeout(answerTimer);
-    currentCueIndex++;
-    showNextCue();
-  };
-}
+};
 
 // Repeats the study phase before moving into the next round
 function startStudyAgainThenRound(nextRoundNum) {
@@ -306,7 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   weekInput = document.getElementById("week-input");
   startBtn = document.getElementById("start-btn");
-  skipBtn = document.getElementById("skip-study-btn"); // reused as Skip in rounds
 
   pairLeftEl = document.getElementById("pair-left");
   pairRightEl = document.getElementById("pair-right");
@@ -336,11 +325,4 @@ document.addEventListener("DOMContentLoaded", () => {
     startStudy();
   });
 
-    // Skip button listener (used in study phase)
-  skipBtn.addEventListener("click", () => {
-    if (studyTimer) {
-      clearInterval(studyTimer);
-    }
-    nextStudyPair();
-  });
 });
