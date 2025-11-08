@@ -253,28 +253,4 @@ document.addEventListener("DOMContentLoaded", () => {
     pairs = shuffle(pairs);
     startStudy();
   });
-
-  restartBtn.addEventListener("click", () => {
-  // Reset state
-  weekNumber = null;
-  wordsetIndex = 0;
-  pairs = [];
-  currentRound = 0;
-  studyIdx = 0;
-  currentCueIndex = 0;
-  currentCorrect = 0;
-
-  // Reset scores
-  roundOneScore = 0;
-  roundTwoScore = 0;
-  roundThreeScore = 0;
-
-  // Clear timers
-  if (studyTimer) clearInterval(studyTimer);
-  if (answerTimer) clearTimeout(answerTimer);
-
-  // Reset UI
-  weekInput.value = "";
-  clampProgress(0);
-  setPhase("setup");
 });
