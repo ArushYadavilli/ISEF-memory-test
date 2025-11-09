@@ -135,7 +135,7 @@ function shuffle(arr) {
 // Sends Data to the form
 function submitResults({weekNumber, r1, r2, r3}){
   const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdAfI1-AVjHhCga1_Lv-geS1Ih_0tOL5wQ_F2vv8dma8GGVLQ/formResponse"
-  const formData = new FormData();
+  const data = new FormData();
 
   data.append("entry.312291640", weekNumber);
   data.append("entry.1830333204", r1);
