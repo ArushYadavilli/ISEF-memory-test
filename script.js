@@ -53,7 +53,7 @@ let currentCueIndex = 0;
 let currentCorrect = 0;
 
 // Time reference for the 5-second answer window during test phase
-let answerTime = null;
+let answerTimer = null;
 
 //Score variables for each round
 let roundOneScore = 0;
