@@ -144,7 +144,7 @@ function submitResults({weekNumber, r1, r2, r3}){
 
   fetch(formUrl, {
     method: "POST",
-    body: data
+    body: data,
     mode: "no-cors"
   
   })
