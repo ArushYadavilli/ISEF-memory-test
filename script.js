@@ -133,10 +133,11 @@ function shuffle(arr) {
 }
 
 // Sends Data to the form
-function submitResults({weekNumber, r1, r2, r3}){
+function submitResults({participantID, weekNumber, r1, r2, r3}){
   const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdAfI1-AVjHhCga1_Lv-geS1Ih_0tOL5wQ_F2vv8dma8GGVLQ/formResponse"
   const data = new FormData();
 
+  data.append("entry.1852794725", participantID);
   data.append("entry.312291640", weekNumber);
   data.append("entry.1830333204", r1);
   data.append("entry.1863797794", r2);
@@ -305,7 +306,11 @@ function showSummary() {
   scoreR2El.textContent = `${roundTwoScore}/12 (Week ${weekNumber})`;
   scoreR3El.textContent = `${roundThreeScore}/12 (Week ${weekNumber})`;
   clampProgress(100);
+
+  const participantID = document.getElementById("participant-id").value.trim();
+  
   submitResults({
+    participantID,
     weekNumber,
     r1: roundOneScore,
     r2: roundTwoScore,
