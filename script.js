@@ -133,11 +133,11 @@ function shuffle(arr) {
 }
 
 // Sends Data to the form
-function submitResults({participantID, weekNumber, r1, r2, r3}){
+function submitResults({participantId, weekNumber, r1, r2, r3}){
   const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdAfI1-AVjHhCga1_Lv-geS1Ih_0tOL5wQ_F2vv8dma8GGVLQ/formResponse"
   const data = new FormData();
 
-  data.append("entry.1852794725", participantID);
+  data.append("entry.1852794725", participantId);
   data.append("entry.312291640", weekNumber);
   data.append("entry.1830333204", r1);
   data.append("entry.1863797794", r2);
@@ -307,10 +307,10 @@ function showSummary() {
   scoreR3El.textContent = `${roundThreeScore}/12 (Week ${weekNumber})`;
   clampProgress(100);
 
-  const participantID = document.getElementById("participant-id").value.trim();
+  const participantId = document.getElementById("participant-id").value.trim();
   
   submitResults({
-    participantID,
+    participantId: participantIdInput.value.trim(),
     weekNumber,
     r1: roundOneScore,
     r2: roundTwoScore,
@@ -331,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
   summarySection = document.getElementById("summary-section");
 
   weekInput = document.getElementById("week-input");
+  participantIdInput = document.getElementById("participant-id");
   startBtn = document.getElementById("start-btn");
 
   pairLeftEl = document.getElementById("pair-left");
@@ -344,9 +345,15 @@ document.addEventListener("DOMContentLoaded", () => {
   scoreR2El = document.getElementById("score-r2");
   scoreR3El = document.getElementById("score-r3");
 
+  
     // Start button listener
   startBtn.addEventListener("click", () => {
+    const participantId = participantIdInput.value.trim();
     const val = parseInt(weekInput.value, 10);
+    if(!participantId){
+      alert("Please enter your Participant ID given to you when you signed up");
+      return;
+    }
     if (!val || val < 1) {
       alert("Please enter a valid week number (>=1).");
       return;
